@@ -1,16 +1,26 @@
 import { useState } from 'react';
-import { fetchWeather } from './api/getData'
-
+import { fetchWeather } from './api/FirstEndPoint'
+import { fetchWeeklySummary } from './api/SecondEndPoint'
+import L from 'leaflet';
 export default function Home() {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [weatherDataHourly, setWeatherDataHourly] = useState(null);
-  const [weatherData, setWeatherData] = useState(null);
+  const [weathercode, setWeatherCode] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [maxTemp, Maxdaly] = useState(0);
+  const [maxTemp, Maxdaly] = useState([]);
   const [times, Times] = useState(null);
-  const [minTemp, Mindaly] = useState(0);
+  const [minTemp, Mindaly] = useState([]);
+  const [sunshine_duration, Sunshine_duration] = useState([]);
+  const [avgWeeklyPressure, AvgWeeklyPressure] = useState(null);
+  const [avgWeekSunshineDuration, AvgWeekSunshineDuration] = useState(null);
+  const [maxWeekTemperature, MaxWeekTemperature] = useState(null);
+  const [minWeekTemperature, MinWeekTemperature] = useState(null);
+  const [weekWeatherSummary, WeekWeatherSummary] = useState(null);
+
+
+  
   const handleFetchWeather = async () => {
     if (!latitude || !longitude) {
       setError('Please provide latitude and longitude.');
@@ -19,35 +29,26 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
+      const weeklydata = await fetchWeeklySummary(latitude,longitude)
       const data = await fetchWeather(latitude, longitude); 
-      const daysHoursStart = {
-        day1: { start: 0, end: 24 },
-        day2: { start: 24, end: 48 },
-        day3: { start: 48, end: 72 },
-        day4: { start: 72, end: 96 },
-        day5: { start: 96, end: 120 },
-        day6: { start: 120, end: 144 },
-        day7: { start: 144, end: 168 }
-      }; 
-
-
-      let temperaturesMax = []
-      let temperaturesMin = []
-   
-      for(var e in daysHoursStart){
-    
-        let temperatures = data.hourly.temperature_2m.slice(daysHoursStart[e].start,daysHoursStart[e].end);
-        temperaturesMax.push(Math.max(...temperatures))
-        temperaturesMin.push(Math.min(...temperatures))
       
-      };
-    
-      Maxdaly(temperaturesMax)
-      Mindaly(temperaturesMin)
-    
-      setWeatherDataHourly(data.hourly.temperature_2m); 
-      setWeatherData(data.hourly.weathercode)
-      Times(data.hourly.time)
+      //first api
+      setWeatherDataHourly(data.rawdata.hourly.temperature_2m); 
+      setWeatherCode(data.weatherDescription)
+      Times(data.rawdata.hourly.time)
+      Sunshine_duration(data.dailyEnergy)
+      Mindaly(data.temperaturesMin)
+      Maxdaly(data.temperaturesMax)
+      //second api 
+      
+      AvgWeeklyPressure(weeklydata.avgWeeklyPressure)
+      AvgWeekSunshineDuration(weeklydata.avgSunshineDuration)
+      MaxWeekTemperature(weeklydata.maxTemperature)
+      MinWeekTemperature(weeklydata.minTemperature)
+      WeekWeatherSummary(weeklydata.weatherSummary)
+      
+
+     
     } catch (err) {
       setError(err.message);
     } finally {
@@ -98,13 +99,31 @@ export default function Home() {
         >
           Refresh
         </button>
-      </div>
+        <div className="w-full h-96 mt-4" id="map"></div>
+      </div>  
+      <div className=" content-normal text-center ">
+      {loading && <p className='text-white'>Loading Weeakly report</p>}
+        {error && <p className="text-red-500">{error}</p>}
+        {maxWeekTemperature && (
+     <div className="w-full max-w text-center text-white">
+              <h2 className="font-bold">Weekly Output:</h2>
+                  <div>
+                    <h3>Pressure: {avgWeeklyPressure}</h3>
+                    <h3>Average Sunshine Duration: {avgWeekSunshineDuration} hours</h3>
+                    <h3>Max Temperature: {maxWeekTemperature}°C</h3>
+                    <h3>Min Temperature: {minWeekTemperature}°C</h3>
+                    <h3>Weather Summary: {weekWeatherSummary}</h3>
+                  </div>
 
+                  </div>
+                  )}
+            </div>
       <div className="w-full max-w mt-4 text-center text-white">
         {loading && <p>Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
-        {weatherData && (
+        {weatherDataHourly && (
             <div className="grid grid-cols-4 content-normal text-center">
+              
               {minTemp.map((temp, index) => {
                 const startIndex = index * 24;
                 const endIndex = (index + 1) * 24;
@@ -113,15 +132,17 @@ export default function Home() {
                 return (
                   <div key={index} className="bg-gray-100 p-4 text-center rounded shadow-md m-3 text-black">
                     <h3 className="font-bold">{times[startIndex].slice(0, 10)}</h3>
+                    <h3 className="font-bold">{sunshine_duration[index]}kWh</h3>
                     <p>Max Temp: {maxTemp[index]}°C</p>
                     <p>Min Temp: {minTemp[index]}°C</p>
                     <div className="mt-2">
                       <ul>
                         {dailyTemps.map((temp, hourIndex) => {
                           const time = times[startIndex + hourIndex];
+                          const weatherCod = weathercode[startIndex + hourIndex];
                           return (
                             <li key={hourIndex}>
-                              Hour {time.slice(11, 16)}: {temp}°C
+                              Hour {time.slice(11, 16)}: {temp}°C {weatherCod}
                             </li>
                           );
                         })}
