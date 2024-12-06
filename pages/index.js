@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { fetchWeather } from './api/FirstEndPoint'
 import { fetchWeeklySummary } from './api/SecondEndPoint'
-import L from 'leaflet';
+
 export default function Home() {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
@@ -18,9 +18,6 @@ export default function Home() {
   const [maxWeekTemperature, MaxWeekTemperature] = useState(null);
   const [minWeekTemperature, MinWeekTemperature] = useState(null);
   const [weekWeatherSummary, WeekWeatherSummary] = useState(null);
-
-
-  
   const handleFetchWeather = async () => {
     if (!latitude || !longitude) {
       setError('Please provide latitude and longitude.');
@@ -99,7 +96,6 @@ export default function Home() {
         >
           Refresh
         </button>
-        <div className="w-full h-96 mt-4" id="map"></div>
       </div>  
       <div className=" content-normal text-center ">
       {loading && <p className='text-white'>Loading Weeakly report</p>}
@@ -127,7 +123,7 @@ export default function Home() {
               {minTemp.map((temp, index) => {
                 const startIndex = index * 24;
                 const endIndex = (index + 1) * 24;
-                const dailyTemps = weatherDataHourly.slice(startIndex, endIndex); // Slice the `weatherDataHourly` array to get the hourly temperatures for the current day.
+                const dailyTemps = weatherDataHourly.slice(startIndex, endIndex); // Slice the weatherDataHourly array to get the hourly temperatures for the current day.
                 
                 return (
                   <div key={index} className="bg-gray-100 p-4 text-center rounded shadow-md m-3 text-black">
@@ -157,4 +153,4 @@ export default function Home() {
       </div>
     );
 
-}
+} 
