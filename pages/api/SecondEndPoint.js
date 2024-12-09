@@ -37,26 +37,29 @@ export async function fetchWeeklySummary(latitude, longitude) {
     
      const rainCodes = [61, 63, 65, 80, 81, 82, 96, 99]; // Rain weather codes
      const snowCodes = [71, 73, 75, 77, 85, 86]; // Snow weather codes
-     const totalHours = hourlyWeatherCodes.length;
-
-        // Count rainy days
-        const rainyDaysCount = hourlyWeatherCodes.filter((code) =>
-        rainCodes.includes(code)
-        ).length;
-
-        // Count snowy days
-        const snowDaysCount = hourlyWeatherCodes.filter((code) =>
-        snowCodes.includes(code)
-        ).length;
+     const totalDays = data.daily.time.length;
+     let rainyDaysCount = 0;
+     let snowDaysCount = 0;
         
-    let weatherSummary;
-        if (rainyDaysCount > totalHours * 0.5) {
-            weatherSummary = "week with rain";
-          } else if (snowDaysCount > totalHours * 0.5) {
-            weatherSummary = "week with snow";
-          } else {
-            weatherSummary = "week without rain or snow";
-          }
+        for (let i = 0; i < totalDays; i++) {
+          const dayWeatherCodes = hourlyWeatherCodes.slice(i * 24, (i + 1) * 24); 
+    
+          // Check if any hour of the day has rain or snow
+          const hasRain = dayWeatherCodes.some(code => rainCodes.includes(code));
+          const hasSnow = dayWeatherCodes.some(code => snowCodes.includes(code));
+          
+          if (hasRain) rainyDaysCount++;
+          if (hasSnow) snowDaysCount++;
+        }
+     
+        let weatherSummary;
+        if (rainyDaysCount >= 4) {
+          weatherSummary = "rainy";
+        } else if (snowDaysCount >= 4) {
+          weatherSummary = "snowy";
+        } else {
+          weatherSummary = "clear";
+        }
     
     return {
     avgWeeklyPressure,

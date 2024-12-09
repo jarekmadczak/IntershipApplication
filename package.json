@@ -9,15 +9,26 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.1",
+    "@fortawesome/free-brands-svg-icons": "^6.7.1",
+    "@fortawesome/free-regular-svg-icons": "^6.7.1",
+    "@fortawesome/free-solid-svg-icons": "^6.7.1",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@react-leaflet/universal-leaflet": "^1.0.1",
     "bcryptjs": "^2.4.3",
+    "chart.js": "^4.4.7",
     "iron-session": "^8.0.4",
     "leaflet": "^1.9.4",
     "mongodb": "^6.10.0",
     "next": "15.0.3",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106"
+    "react": "^19.0.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^19.0.0",
+    "react-leaflet": "^4.2.1",
+    "react-toastify": "^10.0.6"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.15",
     "@types/node": "22.9.1",
     "@types/react": "18.3.12",
     "eslint": "^8",

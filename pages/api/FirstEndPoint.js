@@ -81,7 +81,7 @@ export async function fetchWeather(latitude, longitude) {
         dailyEnergy.push(installationPower*panelEfficiency*parseFloat(data.daily.sunshine_duration[e]))
         
       }
-      
+      console.log(data.daily.sunshine_duration)
   return {
     rawdata: data,
     temperaturesMax,
