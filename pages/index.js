@@ -18,10 +18,6 @@ import {
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 const Map = dynamic(() => import('./mapexp'), { ssr: false });
 
-
-
-
-
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
   return date.toLocaleDateString('en-GB'); 
@@ -177,9 +173,7 @@ const toggleMode = () => {
 
 
 return (
-  <div className={`relative ${isLightMode ? 'bg-stone-400 text-gray-800' : 'bg-zinc-900 text-gray-100'} w-full min-h-screen flex flex-col items-center overflow-hidden`}>
-   
-   
+<div className={`relative ${isLightMode ? 'bg-stone-400 text-gray-800' : 'bg-zinc-900 text-gray-100'} w-full min-h-screen flex flex-col items-center overflow-hidden`}>
    <button 
         onClick={toggleMode} 
         className={`absolute top-6 right-6 p-2 rounded-full ${isLightMode ? 'bg-gray-300' : 'bg-gray-600'} text-${isLightMode ? 'black' : 'white'}`}>
@@ -232,7 +226,7 @@ return (
       <div className="bg-white bg-opacity-20 w-full p-6 rounded-lg shadow-md mt-6">
       {loading && <p className=" text-center">Loading Weekly Report...</p>}
       {error && <p className="text-red-500 text-center">{error}</p>}
-      
+      {/* Week Section*/}
       {maxWeekTemperature && (
         <div className="text-center ">
             <h2 className="font-bold text-2xl mb-4 text-center ">Weekly Report</h2>
@@ -265,6 +259,7 @@ return (
         </div>
       )}
     </div>
+       {/* Hourly Section*/}
           {loading && <p className=" text-center">Loading Hourly Data...</p>}
           {error && <p className="text-red-500 text-center">{error}</p>}
           {weatherDataHourly && (
@@ -310,6 +305,5 @@ return (
           )}
         </div>
       </div>
-    
-  );
-}
+    );
+  }
