@@ -117,7 +117,6 @@ const getChartData = (index) => {
 const getWeatherIcon = (description) => {
   switch (description.toLowerCase()) {
     case "clear sky":
-    case "clear":
       return <FontAwesomeIcon icon={faSun} className="text-yellow-400" />; 
     case "mainly clear":
       return <FontAwesomeIcon icon={faSun} className="text-yellow-300" />; 
@@ -126,6 +125,7 @@ const getWeatherIcon = (description) => {
     case "overcast":
       return <FontAwesomeIcon icon={faCloud} className="text-gray-600" />; 
     case "fog":
+      case "clear":
       return <FontAwesomeIcon icon={faCloud} className="text-gray-400" />; 
     case "depositing rime fog":
       return <FontAwesomeIcon icon={faCloud} className="text-gray-600" />;
