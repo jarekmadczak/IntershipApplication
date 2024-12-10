@@ -189,7 +189,6 @@ return (
         {/* Input Section */}
         <div className="bg-white bg-opacity-20 w-full md:w-1/3 p-6 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-4 text-center">Enter Coordinates</h2>
-          
           {/* Latitude Input */}
           <input
             type="number"
