@@ -188,34 +188,74 @@ return (
       <div className="flex flex-col md:flex-row gap-6">
         {/* Input Section */}
         <div className="bg-white bg-opacity-20 w-full md:w-1/3 p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold  mb-4 text-center">Enter Coordinates</h2>
-          <input 
-            type="number"
-            placeholder="Latitude"
-            value={latitude}
-            onChange={(e) => setLatitude(e.target.value)}
-            className="mb-4 px-4 py-2 w-full rounded border text-black  border-gray-300"
-          />
+          <h2 className="text-lg font-semibold mb-4 text-center">Enter Coordinates</h2>
+          
+          {/* Latitude Input */}
           <input
             type="number"
-            placeholder="Longitude"
-            value={longitude}
-            onChange={(e) => setLongitude(e.target.value)}
-            className="mb-4 px-4 py-2 w-full rounded border text-black  border-gray-300"
+            placeholder="Latitude (-90 to 90)"
+            value={latitude}
+            onChange={(e) => {
+              const value = parseFloat(e.target.value);
+              if (value >= -90 && value <= 90) {
+                setLatitude(e.target.value);
+                setError(null); // Clear error if valid
+              } else {
+                setError("Latitude must be between -90 and 90.");
+              }
+            }}
+            min="-90"
+            max="90"
+            className="mb-4 px-4 py-2 w-full rounded border text-black border-gray-300"
           />
+          
+          {/* Longitude Input */}
+          <input
+            type="number"
+            placeholder="Longitude (-180 to 180)"
+            value={longitude}
+            onChange={(e) => {
+              const value = parseFloat(e.target.value);
+              if (value >= -180 && value <= 180) {
+                setLongitude(e.target.value);
+                setError(null); // Clear error if valid
+              } else {
+                setError("Longitude must be between -180 and 180.");
+              }
+            }}
+            min="-180"
+            max="180"
+            className="mb-4 px-4 py-2 w-full rounded border text-black border-gray-300"
+          />
+          
+          {/* Buttons */}
           <button
-            onClick={handleFetchWeather}
-            className="mb-2 px-4 py-2 w-full bg-green-500  rounded hover:bg-green-600"
+            onClick={() => {
+              if (latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180) {
+                handleFetchWeather();
+                setError(null); // Clear error if inputs are valid
+              } else {
+                setError("Please enter valid latitude and longitude values.");
+              }
+            }}
+            className="mb-2 px-4 py-2 w-full bg-green-500 rounded hover:bg-green-600"
           >
             Get Weather
           </button>
+          
           <button
             onClick={refreshPage}
-            className="px-4 py-2 w-full bg-red-500  rounded hover:bg-red-600"
+            className="px-4 py-2 w-full bg-red-500 rounded hover:bg-red-600"
           >
             Refresh
           </button>
+          
+          {/* Error Message */}
+          {error && (
+            <p className="mt-4 text-red-500 font-semibold text-center">{error}</p>
+          )}
         </div>
+
 
         {/* Map Section */}
         <div className="bg-white bg-opacity-20 flex-grow h-48 md:h-auto p-6 rounded-lg shadow-md flex items-center justify-center">
