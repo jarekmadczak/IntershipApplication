@@ -1,48 +1,68 @@
-import { useEffect, useState, useRef } from "react";
-import leaflet from "leaflet";
+import { useState, useEffect, useRef } from "react";
 
 export default function Map({ setLatitude, setLongitude, centerLocation }) {
-  const mapRef = useRef(null); // Reference for the map container
-  const [location, setLocation] = useState({ latitude: 50.0647, longitude: 19.945 }); // Default location set to Kraków
+  const mapRef = useRef(null);
+  const [location, setLocation] = useState({ latitude: 50.0647, longitude: 19.945 });
+  const [isClient, setIsClient] = useState(false);
+  const [map, setMap] = useState(null);
 
   useEffect(() => {
-    if (!mapRef.current) return;
-
-    // Initialize the map, centering on Kraków initially
-    const map = leaflet.map(mapRef.current).setView([location.latitude, location.longitude], 13);
-
-    leaflet
-      .tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        
-      })
-      .addTo(map);
-
-    map.on('click', (e) => {
-      const { lat, lng } = e.latlng;
-      setLatitude(lat);  // Update latitude state
-      setLongitude(lng); // Update longitude state
-    });
-
-    if (centerLocation) {
-      map.setView([centerLocation.latitude, centerLocation.longitude], 13);
- 
+    if (typeof window !== "undefined") {
+      setIsClient(true);
     }
+  }, []);
 
-    return () => {
-      if (map) {
-        map.remove();
+  useEffect(() => {
+    if (!isClient || !mapRef.current) return;
+
+    const loadLeaflet = async () => {
+      try {
+        const leaflet = (await import("leaflet")).default;
+
+        if (map) return;
+
+        const newMap = leaflet.map(mapRef.current).setView([location.latitude, location.longitude], 13);
+
+        leaflet.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(newMap);
+
+        newMap.on("click", (e) => {
+          const { lat, lng } = e.latlng;
+          setLatitude(lat);
+          setLongitude(lng);
+        });
+
+        if (centerLocation) {
+          newMap.setView([centerLocation.latitude, centerLocation.longitude], 13);
+        }
+
+        setMap(newMap);
+
+        return () => {
+          newMap.remove();
+        };
+      } catch (error) {
+        console.error("Error initializing map:", error);
       }
     };
-  }, [location, centerLocation, setLatitude, setLongitude]); 
+    if (centerLocation) {
+        map.setView([centerLocation.latitude, centerLocation.longitude], 14);
+      }
+    loadLeaflet();
+  }, [isClient, location, centerLocation, setLatitude, setLongitude, map]);
+
+ 
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full">
-      <div
-        ref={mapRef}
-        style={{ height: "300px", width: "100%" }} 
-        className="rounded-lg shadow-md" 
-      ></div>
+      {isClient ? (
+        <div
+          ref={mapRef}
+          style={{ height: "300px", width: "100%" }}
+          className="rounded-lg shadow-md"
+        ></div>
+      ) : (
+        <p>Loading map...</p>
+      )}
     </div>
   );
 }
